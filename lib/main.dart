@@ -1,6 +1,7 @@
 import 'dart:ffi';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_barcode_scanner/flutter_barcode_scanner.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 
 void main() => runApp(MyApp());
@@ -28,7 +29,6 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -36,38 +36,47 @@ class _MyHomePageState extends State<MyHomePage> {
         title: Text(widget.title),
       ),
       body: Center(
-        child: Column(
-
+        child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            FloatingActionButton(
+              onPressed: () {
+                scannerMode();
+              },
+              child: Icon(Icons.scanner),
+              tooltip: "Scan QR Code",
+            ),
+            SizedBox(width: 100,height: 100,),
+            FloatingActionButton(
+              onPressed: () {
+                _displayQRCode("Flutter");
+              },
+              tooltip: 'QR Code',
+              child: Icon(Icons.keyboard_backspace),
+            ),
+          ],
         ),
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: (){
-          _displayQRCode("Flutter");
-        },
-        tooltip: 'QR Code',
-        child: Icon(Icons.keyboard_backspace),
       ),
     );
   }
-  Future _displayQRCode(String data){
+
+  Future _displayQRCode(String data) {
     return showDialog(
         context: context,
         builder: (context) {
-
           return Container(
             child: AlertDialog(
-              title: Text('Your QR COde : '),
-              content: Container(
-                height: 300,
-                width: 300,
-                child: QrImage(
-                  data: data,
-                  version: QrVersions.auto,
-                  gapless: false,
-                  size: 200,
+                title: Text('Your QR COde : '),
+                content: Container(
+                  height: 300,
+                  width: 300,
+                  child: QrImage(
+                    data: data,
+                    version: QrVersions.auto,
+                    gapless: false,
+                    size: 200,
+                  ),
                 ),
-              ),
                 actions: <Widget>[
                   new FlatButton(
                     child: new Text('Ok'),
@@ -81,11 +90,13 @@ class _MyHomePageState extends State<MyHomePage> {
                       Navigator.of(context).pop();
                     },
                   )
-                ]
-
-            ),
+                ]),
           );
-
         });
+  }
+
+  Future scannerMode() async {
+    String code = await FlutterBarcodeScanner.scanBarcode(
+        "#009742", "cancel", true, ScanMode.BARCODE);
   }
 }
